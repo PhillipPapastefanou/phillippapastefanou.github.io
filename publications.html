@@ -6,30 +6,125 @@
     <title>Publications | Phillip Papastefanou</title>
     <style>
         /* Base styles */
-        body, html { margin: 0; padding: 0; font-family: 'Avenir Next', Avenir, 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #f1f5f9; color: #1e293b; }
-        .top-nav { background: white; box-shadow: 0 2px 4px rgb(0 0 0 / 0.1); display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; position: sticky; top: 0; z-index: 100;}
-        .nav-brand { font-size: 1.2rem; font-weight: 700; color: #d62728; text-decoration: none; }
-        .nav-links { list-style: none; margin: 0; padding: 0; display: flex; gap: 25px; }
-        .nav-links li a { text-decoration: none; color: #475569; font-weight: 600; font-size: 0.95rem; transition: color 0.2s; }
+        body, html { margin: 0; padding: 0; font-family: 'Avenir Next', Avenir, 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #f1f5f9; color: #1e293b; line-height: 1.5;}
+        .top-nav { background: white; box-shadow: 0 2px 4px rgb(0 0 0 / 0.1); display: flex; justify-content: space-between; align-items: center; padding: 12px 40px; position: sticky; top: 0; z-index: 100;}
+        .nav-brand { font-size: 1.1rem; font-weight: 700; color: #d62728; text-decoration: none; }
+        .nav-links { list-style: none; margin: 0; padding: 0; display: flex; gap: 20px; }
+        .nav-links li a { text-decoration: none; color: #475569; font-weight: 600; font-size: 0.9rem; transition: color 0.2s; }
         .nav-links li a:hover, .nav-links li a.active { color: #d62728; }
-        .main-content { max-width: 900px; margin: 40px auto; padding: 20px; }
+        .main-content { max-width: 850px; margin: 30px auto; padding: 15px; }
 
-        /* Publications specific styles */
-        .pub-header { border-bottom: 3px solid #d62728; padding-bottom: 10px; margin-bottom: 20px; font-size: 2rem; color: #1e293b; }
-        .pub-list { display: flex; flex-direction: column; gap: 15px; }
-        .pub-card {
-            background: white; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; flex-direction: column;
-            cursor: grab; transition: transform 0.2s, box-shadow 0.2s;
+        .section-header { border-bottom: 2px solid #d62728; padding-bottom: 6px; margin-top: 30px; margin-bottom: 15px; font-size: 1.6rem; color: #1e293b; }
+        
+        .year-card {
+            background: white; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 10px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            position: relative; z-index: 1; overflow: visible !important;
         }
-        .pub-card:active { cursor: grabbing; }
-        .pub-card.dragging { opacity: 0.5; transform: scale(0.98); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
-        .pub-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 5px; }
+        .year-card:hover { z-index: 50; }
+        
+        .year-summary {
+            padding: 10px 15px; display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; background: #ffffff; list-style: none;
+        }
+        .year-summary:hover { background: #f8fafc; }
+        .year-summary::-webkit-details-marker { display: none; }
+        .year-label { font-size: 1.1rem; font-weight: 700; color: #d62728; }
+        .year-icon { color: #94a3b8; font-size: 0.8rem; transition: transform 0.3s; }
+        details[open] .year-icon { transform: rotate(180deg); color: #d62728; }
+        
+        .year-content { padding: 0 15px 5px 15px; border-top: 1px solid #e2e8f0; background: #fafafa; overflow: visible !important; }
+        .pub-list { list-style: none; padding: 0; margin: 0; }
+        
+        /* THE FIX: Ensure the item itself cannot exceed 100% width */
+        .pub-item {
+            display: flex; justify-content: space-between; gap: 15px;
+            padding: 12px 0; border-bottom: 1px dashed #cbd5e1;
+            align-items: flex-start; position: relative; z-index: 1;
+            overflow: visible !important;
+            width: 100%; box-sizing: border-box;
+        }
+        .pub-item:hover { z-index: 999; border-bottom-color: transparent; }
+        .pub-item:last-child { border-bottom: none; }
+
+        /* THE FIX: min-width: 0 is the golden rule to stop flexbox text blowouts */
+        .pub-text { 
+            flex: 1; 
+            min-width: 0; 
+        }
+        
+        .pub-title { font-size: 1rem; font-weight: 600; margin-bottom: 2px; line-height: 1.2;}
         .pub-title a { color: #1e293b; text-decoration: none; transition: color 0.2s; }
         .pub-title a:hover { color: #d62728; text-decoration: underline; }
-        .pub-authors { color: #475569; font-size: 0.95rem; margin-bottom: 5px; }
-        .pub-journal { color: #64748b; font-size: 0.85rem; font-style: italic; }
-        .pub-year { font-weight: bold; color: #d62728; }
+        .pub-authors { color: #475569; font-size: 0.85rem; margin-bottom: 2px; }
+        .pub-journal { color: #64748b; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; }
+
+        /* Abstract Toggle */
+        .abstract-wrapper { margin-top: 8px; }
+        .abstract-btn {
+            background: none; border: none; padding: 0;
+            color: #d62728; font-size: 0.8rem; font-weight: 600;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
+        }
+        .abstract-btn:hover { text-decoration: underline; }
+        
+        /* THE FIX: The nuclear word-break options to override non-breaking spaces */
+        .abstract-text {
+            display: none; 
+            width: 100%; box-sizing: border-box;
+            font-size: 0.85rem; color: #334155; background: #f1f5f9;
+            padding: 12px; border-radius: 6px; margin-top: 8px;
+            border-left: 3px solid #d62728; line-height: 1.5;
+            text-align: left;
+            
+            white-space: pre-wrap;
+            overflow-wrap: anywhere; 
+            word-wrap: break-word; 
+            word-break: break-word; 
+        }
+
+        /* MASSIVE THUMBNAIL POPOVER */
+        .thumbnail-container {
+            position: relative;
+            flex: 0 0 110px; 
+            width: 110px;
+            cursor: pointer;
+            z-index: 10;
+        }
+        
+        .pub-thumbnail {
+            width: 110px; height: 75px;
+            background-color: #e2e8f0; border-radius: 4px;
+            object-fit: cover; border: 1px solid #cbd5e1;
+            transition: opacity 0.2s;
+        }
+        .thumbnail-container:hover .pub-thumbnail { opacity: 0.8; }
+
+        .hover-popover {
+            display: none; position: absolute; right: 0; top: 100%; margin-top: 15px; 
+            width: 550px; max-width: 85vw; background: white; border: 1px solid #cbd5e1;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); padding: 15px; border-radius: 8px; z-index: 99999; 
+        }
+        
+        .thumbnail-container:hover .hover-popover { display: block; }
+        
+        .popover-img { width: 100%; height: auto; border-radius: 4px; border: 1px solid #e2e8f0; }
+        .popover-caption { font-size: 0.85rem; color: #475569; margin-top: 10px; text-align: left; line-height: 1.4; }
+        
+        .hover-popover::before {
+            content: ''; position: absolute; top: -10px; right: 45px;
+            border-width: 0 10px 10px 10px; border-style: solid;
+            border-color: transparent transparent #cbd5e1 transparent;
+        }
+        .hover-popover::after {
+            content: ''; position: absolute; top: -8px; right: 45px;
+            border-width: 0 10px 10px 10px; border-style: solid;
+            border-color: transparent transparent white transparent;
+        }
+        
+        .thumbnail-container::after {
+            content: ''; position: absolute; bottom: -15px; right: 0; width: 110px; height: 15px;
+        }
     </style>
 </head>
 <body>
@@ -46,63 +141,116 @@
     </nav>
 
     <div class="main-content">
-        <h1 class="pub-header">Publications</h1>
-        <p style="color:#64748b; margin-bottom: 20px;">Drag and drop to reorder.</p>
-        <div class="pub-list" id="drag-container">
-            </div>
+        <h1 class="section-header">Journal Articles</h1>
+        <div id="journal-container"></div>
+
+        <h1 class="section-header">Conferences & Preprints</h1>
+        <div id="conf-container"></div>
     </div>
 
+    <script src="src/my_publications.js"></script>
+
     <script>
-        const publications = [
-            { id: "pub1", title: "Tree mortality and the role of drought", authors: "P Papastefanou, et al.", journal: "Global Change Biology", year: 2024, link: "https://scholar.google.com/citations?user=v55L2AoAAAAJ&hl=de" },
-            { id: "pub2", title: "Advanced modeling of ecosystem dynamics under climate stress", authors: "P Papastefanou, J Doe, A Smith", journal: "Ecological Modelling", year: 2023, link: "https://scholar.google.com/citations?user=v55L2AoAAAAJ&hl=de" },
-            { id: "pub3", title: "Vegetation responses to extreme weather events", authors: "P Papastefanou, et al.", journal: "Nature Ecology & Evolution", year: 2021, link: "https://scholar.google.com/citations?user=v55L2AoAAAAJ&hl=de" }
-        ];
-
-        const container = document.getElementById('drag-container');
-
-        // Build the HTML cards
-        let html = '';
-        publications.forEach(pub => {
-            html += `
-            <div class="pub-card" draggable="true" data-id="${pub.id}">
-                <div class="pub-title"><a href="${pub.link}" target="_blank">${pub.title}</a></div>
-                <div class="pub-authors">${pub.authors}</div>
-                <div class="pub-journal">${pub.journal} <span class="pub-year">(${pub.year})</span></div>
-            </div>`;
-        });
-        container.innerHTML = html;
-
-        // Drag and Drop Engine
-        const draggables = document.querySelectorAll('.pub-card');
-        draggables.forEach(draggable => {
-            draggable.addEventListener('dragstart', () => draggable.classList.add('dragging'));
-            draggable.addEventListener('dragend', () => draggable.classList.remove('dragging'));
-        });
-
-        container.addEventListener('dragover', e => {
-            e.preventDefault();
-            const afterElement = getDragAfterElement(container, e.clientY);
-            const draggable = document.querySelector('.dragging');
-            if (afterElement == null) {
-                container.appendChild(draggable);
+        // --- THE IMAGE FALLBACK ENGINE ---
+        function handleImageFallback(imgElement, pubId) {
+            const isPopover = imgElement.classList.contains('popover-img');
+            
+            if (imgElement.src.includes('.jpg')) {
+                imgElement.src = `images/figures/${pubId}.png`;
             } else {
-                container.insertBefore(draggable, afterElement);
+                const dimensions = isPopover ? '600x400' : '110x75';
+                imgElement.src = `https://via.placeholder.com/${dimensions}/e2e8f0/94a3b8?text=No+Figure`;
+                imgElement.onerror = null; 
             }
-        });
-
-        function getDragAfterElement(container, y) {
-            const draggableElements = [...container.querySelectorAll('.pub-card:not(.dragging)')];
-            return draggableElements.reduce((closest, child) => {
-                const box = child.getBoundingClientRect();
-                const offset = y - box.top - box.height / 2;
-                if (offset < 0 && offset > closest.offset) {
-                    return { offset: offset, element: child };
-                } else {
-                    return closest;
-                }
-            }, { offset: Number.NEGATIVE_INFINITY }).element;
         }
+
+        // --- RENDER LOGIC ---
+        function renderGroupedPublications(dataArray, containerId) {
+            const container = document.getElementById(containerId);
+            if (!dataArray || dataArray.length === 0) return;
+
+            const cleanedData = dataArray.filter(pub => pub.journal !== "Unknown Journal");
+
+            const groupedByYear = {};
+            cleanedData.forEach(pub => {
+                const year = (pub.publication_details && pub.publication_details.year) ? pub.publication_details.year : "N/A";
+                
+                if (!groupedByYear[year]) groupedByYear[year] = [];
+                groupedByYear[year].push(pub);
+            });
+
+            const sortedYears = Object.keys(groupedByYear).sort((a, b) => {
+                if (a === "N/A") return 1;
+                if (b === "N/A") return -1;
+                return parseInt(b) - parseInt(a);
+            });
+
+            let html = '';
+            
+            sortedYears.forEach((year) => {
+                html += `
+                <details class="year-card" open>
+                    <summary class="year-summary">
+                        <span class="year-label">${year}</span>
+                        <span class="year-icon">▼</span>
+                    </summary>
+                    <div class="year-content">
+                        <ul class="pub-list">
+                `;
+
+                groupedByYear[year].forEach(pub => {
+                    const highlightedAuthors = pub.authors.replace(/(Phillip Papastefanou|Philip Papastefanou)/gi, '<strong>$1</strong>');
+                    const initialImageAttempt = `images/figures/${pub.id}.jpg`;
+                    const journalIconSrc = pub.journal_icon ? `<img src="${pub.journal_icon}" alt="Icon" class="journal-icon">` : '';
+
+                    html += `
+                            <li class="pub-item">
+                                <div class="pub-text">
+                                    <div class="pub-title"><a href="${pub.link}" target="_blank">${pub.title}</a></div>
+                                    <div class="pub-authors">${highlightedAuthors}</div>
+                                    <div class="pub-journal">${journalIconSrc}<em>${pub.journal}</em></div>
+                                    
+                                    <div class="abstract-wrapper">
+                                        <button class="abstract-btn" onclick="
+                                            const content = this.nextElementSibling;
+                                            if (content.style.display === 'block') {
+                                                content.style.display = 'none';
+                                                this.innerHTML = 'Show Abstract ▼';
+                                            } else {
+                                                content.style.display = 'block';
+                                                this.innerHTML = 'Hide Abstract ▲';
+                                            }
+                                        ">Show Abstract ▼</button>
+                                        <div class="abstract-text">${pub.abstract}</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="thumbnail-container">
+                                    <img src="${initialImageAttempt}" onerror="handleImageFallback(this, '${pub.id}')" alt="Paper Thumbnail" class="pub-thumbnail">
+                                    
+                                    <div class="hover-popover">
+                                        <img src="${initialImageAttempt}" onerror="handleImageFallback(this, '${pub.id}')" alt="Full size figure" class="popover-img">
+                                        <div class="popover-caption">
+                                            <strong>Figure 1:</strong> Key findings from ${year}. Dummy text explaining the methodology and results depicted in the chart.
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                    `;
+                });
+
+                html += `
+                        </ul>
+                    </div>
+                </details>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        renderGroupedPublications(journalArticles, 'journal-container');
+        renderGroupedPublications(conferencePapers, 'conf-container');
     </script>
 </body>
 </html>
