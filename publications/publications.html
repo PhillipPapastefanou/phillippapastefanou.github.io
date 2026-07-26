@@ -132,11 +132,11 @@
     <nav class="top-nav">
         <a href="/" class="nav-brand">Phillip Papastefanou</a>
         <ul class="nav-links">
-            <li><a href="index.html">About me</a></li>
+            <li><a href="/index.html">About me</a></li>
             <li><a href="/EcologicalModelling/">Lectures</a></li>
             <li><a href="#">Interactive</a></li>
-            <li><a href="#">Projects</a></li>
-            <li><a href="publications.html" class="active">Publications</a></li> 
+            <li><a href="/projects/project.html">Projects</a></li>
+            <li><a href="/publications/publications.html" class="active">Publications</a></li>
         </ul>
     </nav>
 
@@ -148,7 +148,7 @@
         <div id="conf-container"></div>
     </div>
 
-    <script src="src/my_publications.js"></script>
+    <script src="../src/my_publications_v2.js"></script>
 
     <script>
         // --- THE IMAGE FALLBACK ENGINE ---
@@ -156,7 +156,7 @@
             const isPopover = imgElement.classList.contains('popover-img');
             
             if (imgElement.src.includes('.jpg')) {
-                imgElement.src = `images/figures/${pubId}.png`;
+                imgElement.src = `../images/figures/${pubId}.png`;
             } else {
                 const dimensions = isPopover ? '600x400' : '110x75';
                 imgElement.src = `https://via.placeholder.com/${dimensions}/e2e8f0/94a3b8?text=No+Figure`;
@@ -200,7 +200,7 @@
 
                 groupedByYear[year].forEach(pub => {
                     const highlightedAuthors = pub.authors.replace(/(Phillip Papastefanou|Philip Papastefanou)/gi, '<strong>$1</strong>');
-                    const initialImageAttempt = `images/figures/${pub.id}.jpg`;
+                    const initialImageAttempt = `../images/figures/${pub.id}.jpg`;
                     const journalIconSrc = pub.journal_icon ? `<img src="${pub.journal_icon}" alt="Icon" class="journal-icon">` : '';
 
                     html += `
