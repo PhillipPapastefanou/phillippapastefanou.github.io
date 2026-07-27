@@ -10,14 +10,14 @@
     "min": 0.5, "max": 3.0, "step": 0.05, "default": 1.0, "decimals": 2
   },
   {
-    "name": "theta_moisture_factor",
+    "name": "precip_reduction_factor",
     "group": "Drought stress",
-    "label": "Soil moisture stress",
-    "unit": "x θ",
-    "description": "Constant multiplier on the observed soil water content (theta), applied uniformly to every layer over the whole simulation period. 1.0 = observed theta; below 1 is drier soil, above 1 is wetter soil.",
-    "latex": "f_{\\theta}",
+    "label": "Precipitation stress",
+    "unit": "x precip",
+    "description": "Constant multiplier on the forcing precipitation rate, applied every timestep before it reaches the soil hydraulic model's infiltration. 1.0 = observed precipitation; below 1 is drought (less rain), above 1 is wetter than observed.",
+    "latex": "f_{P}",
     "increases_stress": false,
-    "min": 0.5, "max": 1.5, "step": 0.02, "default": 1.0, "decimals": 2
+    "min": 0.0, "max": 2.0, "step": 0.05, "default": 1.0, "decimals": 2
   },
   {
     "name": "canopy_height",
@@ -29,8 +29,35 @@
     "min": 5, "max": 45, "step": 0.5, "default": 20, "decimals": 0
   },
   {
+    "name": "leaf_area_index",
+    "group": "Canopy",
+    "label": "Leaf area index",
+    "unit": "m2 m-2",
+    "description": "Leaf area per unit ground area. Also the basis conversion between the model's per-leaf-area fluxes (T, J, G) and per-ground-area quantities (root_area_index, the soil hydraulic model). Typical forest range ~2-8.",
+    "latex": "LAI",
+    "min": 0.5, "max": 10, "step": 0.1, "default": 4.8, "decimals": 2
+  },
+  {
+    "name": "leaf_hydraulic_capacitance",
+    "group": "Canopy",
+    "label": "Leaf capacitance",
+    "unit": "mol H2O m-2 MPa-1",
+    "description": "Leaf hydraulic capacitance (range 0.2-1.2, Blackman & Brodribb 2011; ~0.05, Xu et al. 2016).",
+    "latex": "\\Gamma_\\mathrm{leaf}",
+    "min": 0.05, "max": 3.0, "step": 0.05, "default": 0.833333, "decimals": 3
+  },
+  {
+    "name": "g_stem_res",
+    "group": "Stem",
+    "label": "Bark conductance",
+    "unit": "mol m-2 s-1",
+    "description": "Residual water loss directly through the stem/bark surface, bypassing stomata entirely. 0 = no bark water loss (the pathway is off).",
+    "latex": "g_\\mathrm{bark}",
+    "min": 0.0, "max": 0.02, "step": 0.0005, "default": 0.0, "decimals": 4
+  },
+  {
     "name": "k_xylem_sat",
-    "group": "Xylem conductivity",
+    "group": "Stem",
     "label": "Xylem sat. conductivity",
     "unit": "mol m-1 s-1 MPa-1",
     "description": "Saturated xylem hydraulic conductivity (typical range 0.5-10 kg m-1 s-1 MPa-1, Xu et al. 2016).",
@@ -39,7 +66,7 @@
   },
   {
     "name": "psi50_xylem",
-    "group": "Xylem conductivity",
+    "group": "Stem",
     "label": "Xylem ψ₅₀",
     "unit": "MPa",
     "description": "Xylem water potential at 50% loss of conductivity.",
@@ -48,7 +75,7 @@
   },
   {
     "name": "psi88_xylem",
-    "group": "Xylem conductivity",
+    "group": "Stem",
     "label": "Xylem ψ₈₈",
     "unit": "MPa",
     "description": "Xylem water potential at 88% loss of conductivity.",
@@ -57,7 +84,7 @@
   },
   {
     "name": "huber_value",
-    "group": "Xylem conductivity",
+    "group": "Stem",
     "label": "Huber value",
     "unit": "m2 m-2",
     "description": "Sapwood-to-leaf area ratio (1/klatosa). Typical range 1/20000 to 1/2000.",
@@ -66,7 +93,7 @@
   },
   {
     "name": "stem_hydraulic_capacitance_max",
-    "group": "Hydraulic capacitance",
+    "group": "Stem",
     "label": "Stem capacitance (max)",
     "unit": "mol m-3 MPa-1",
     "description": "Maximum stem hydraulic capacitance (Meinzer et al. 2011, Fig 13.2; range 10-500 kg H2O m-3 MPa-1).",
@@ -75,7 +102,7 @@
   },
   {
     "name": "stem_hydraulic_capacitance_res",
-    "group": "Hydraulic capacitance",
+    "group": "Stem",
     "label": "Stem capacitance (res)",
     "unit": "mol m-3 MPa-1",
     "description": "Residual stem hydraulic capacitance (range 0-30 kg H2O m-3 MPa-1).",
@@ -83,21 +110,11 @@
     "min": 0, "max": 5000, "step": 50, "default": 1111.111111, "decimals": 0
   },
   {
-    "name": "leaf_hydraulic_capacitance",
-    "group": "Hydraulic capacitance",
-    "label": "Leaf capacitance",
-    "unit": "mol H2O m-2 MPa-1",
-    "description": "Leaf hydraulic capacitance (range 0.2-1.2, Blackman & Brodribb 2011; ~0.05, Xu et al. 2016).",
-    "latex": "\\Gamma_\\mathrm{leaf}",
-    "min": 0.05, "max": 3.0, "step": 0.05, "default": 0.833333, "decimals": 3
-  },
-  {
     "name": "g0",
     "group": "Stomatal",
-    "label": "Min. stomatal conductance",
+    "label": "g_0 (ecosystem)",
     "unit": "mol m-2 s-1",
     "description": "Medlyn et al. 2011 model minimum/cuticular stomatal conductance g0 (residual conductance as photosynthesis approaches zero). Medlyn 2011: 0-0.05.",
-    "latex": "g_0",
     "min": 0.0, "max": 0.05, "step": 0.001, "default": 0.005, "decimals": 3
   },
   {
@@ -153,7 +170,7 @@
     "unit": "log10(m s-1)",
     "description": "Saturated soil hydraulic conductivity, applied uniformly to every soil layer. Log10-scaled: physically spans ~1e-9 (clay) to ~1e-3 (sand/gravel), too wide for a linear slider.",
     "latex": "\\log_{10} K_{s,sat}",
-    "min": -9, "max": -5, "step": 0.05, "default": -7.25, "decimals": 2
+    "min": -9, "max": -5, "step": 0.05, "default": -6.0, "decimals": 2
   },
   {
     "name": "psi_soil_sat",
@@ -194,5 +211,23 @@
     "description": "Van Genuchten pore-size distribution index, applied uniformly to every soil layer.",
     "latex": "\\lambda_{pore}",
     "min": 0.1, "max": 2.0, "step": 0.01, "default": 0.6, "decimals": 3
+  },
+  {
+    "name": "jackson_root_beta",
+    "group": "Soil",
+    "label": "Root distribution (Jackson β)",
+    "unit": "-",
+    "description": "Jackson et al. 1996 rooting-depth shape parameter: higher values spread roots deeper/more evenly across soil layers, lower values concentrate them near the surface. Typical range ~0.90 (shallow-rooted) to ~0.99 (deep-rooted, e.g. forests).",
+    "latex": "\\beta_{root}",
+    "min": 0.80, "max": 0.999, "step": 0.001, "default": 0.96, "decimals": 3
+  },
+  {
+    "name": "surface_runoff_steepness",
+    "group": "Soil",
+    "label": "Runoff steepness",
+    "unit": "-",
+    "description": "Subgrid steepness parameter limiting infiltration into the soil hydraulic model during heavy rain. 0 = infiltration capped only by the saturated conductivity (no extra runoff).",
+    "latex": "b_{runoff}",
+    "min": 0.0, "max": 0.5, "step": 0.01, "default": 0.0, "decimals": 2
   }
 ]
